@@ -4,7 +4,6 @@ Provides easy interface for the browser from your tests providing the `browser` 
 which is an object of splinter Browser class.
 """
 import codecs
-import functools  # pragma: no cover
 import warnings
 
 try:
@@ -18,44 +17,25 @@ import re
 
 import pytest  # pragma: no cover
 import splinter  # pragma: no cover
+from splinter import driver
 from _pytest import junitxml
 
 from urllib3.exceptions import MaxRetryError
 
-from selenium.webdriver.support import wait
 from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
 from selenium.common.exceptions import WebDriverException
 
 from .webdriver_patches import patch_webdriver  # pragma: no cover
-from .splinter_patches import patch_webdriverelement  # pragma: no cover
+from .splinter_patches import PatchDriverAPI  # pragma: no cover
+
+
+driver.DriverAPI = PatchDriverAPI
 
 
 LOGGER = logging.getLogger(__name__)
 
 
 NAME_RE = re.compile(r"[\W]")
-
-
-def _visit(self, old_visit, url):
-    """Override splinter's visit to avoid unnecessary checks and add wait_until instead."""
-    old_visit(url)
-    self.wait_for_condition(self.visit_condition, timeout=self.visit_condition_timeout)
-
-
-def _wait_for_condition(
-    self, condition=None, timeout=None, poll_frequency=0.5, ignored_exceptions=None
-):
-    """Wait for given javascript condition."""
-    condition = functools.partial(condition or self.visit_condition, self)
-
-    timeout = timeout or self.wait_time
-
-    return wait.WebDriverWait(
-        self.driver,
-        timeout,
-        poll_frequency=poll_frequency,
-        ignored_exceptions=ignored_exceptions,
-    ).until(lambda browser: condition())
 
 
 def _screenshot_extraline(screenshot_png_file_name, screenshot_html_file_name):
@@ -69,21 +49,6 @@ html: %s
         screenshot_png_file_name,
         screenshot_html_file_name,
     )
-
-
-def Browser(*args, **kwargs):
-    """Emulate splinter's Browser."""
-    visit_condition = kwargs.pop("visit_condition")
-    visit_condition_timeout = kwargs.pop("visit_condition_timeout")
-    browser = splinter.Browser(*args, **kwargs)
-    browser.wait_for_condition = functools.partial(_wait_for_condition, browser)
-    if hasattr(browser, "driver"):
-        browser.switch_to = browser.driver.switch_to
-        browser.visit_condition = visit_condition
-        browser.visit_condition_timeout = visit_condition_timeout
-        browser.visit = functools.partial(_visit, browser, browser.visit)
-    browser.__splinter_browser__ = True
-    return browser
 
 
 @pytest.fixture(scope="session")  # pragma: no cover
@@ -275,7 +240,6 @@ def browser_pool(request, splinter_close_browser):
 def browser_patches():
     """Browser monkey patches."""
     patch_webdriver()
-    patch_webdriverelement()
 
 
 @pytest.fixture(scope="session")
@@ -287,7 +251,7 @@ def session_tmpdir(tmpdir_factory):
 @pytest.fixture(scope="session")
 def splinter_browser_class(request):
     """Browser class to use for browser instance creation."""
-    return Browser
+    return splinter.Browser
 
 
 def get_args(

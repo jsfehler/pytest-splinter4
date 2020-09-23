@@ -1,21 +1,41 @@
 """Patches for splinter."""
-from functools import partial
+import functools  # pragma: no cover
 
-from splinter.driver.webdriver import firefox
+from splinter import driver
 
-from selenium.webdriver.common.action_chains import ActionChains  # pragma: no cover
+from selenium.webdriver.support import wait
 
 
-def patch_webdriverelement():  # pragma: no cover
-    """Patch the WebDriverElement to allow firefox to use mouse_over."""
+class PatchDriverAPI(driver.DriverAPI):
+    """Add extra methods to splinter's Browser."""
+    def __init__(self, *args, **kwargs):
+        visit_condition = kwargs.pop("visit_condition")
+        visit_condition_timeout = kwargs.pop("visit_condition_timeout")
+        super().__init__(self, *args, **kwargs)
 
-    def mouse_over(self):
-        """Perform a mouse over the element which works."""
-        (
-            ActionChains(self.parent.driver)
-            .move_to_element_with_offset(self._element, 2, 2)
-            .perform()
-        )
+        if hasattr(self, "driver"):
+            self.visit_condition = visit_condition
+            self.visit_condition_timeout = visit_condition_timeout
+            self.switch_to = self.driver.switch_to
 
-    # Apply the monkey patch for Firefox WebDriverElement
-    firefox.WebDriverElement.mouse_over = mouse_over
+        self.__splinter_browser__ = True
+
+    def visit(self, url):
+        """Override splinter's visit to avoid unnecessary checks and add wait_until instead."""
+        super().visit(url)
+        self.wait_for_condition(self.visit_condition, timeout=self.visit_condition_timeout)
+
+    def wait_for_condition(
+        self, condition=None, timeout=None, poll_frequency=0.5, ignored_exceptions=None
+    ):
+        """Wait for given javascript condition."""
+        condition = functools.partial(condition or self.visit_condition, self)
+
+        timeout = timeout or self.wait_time
+
+        return wait.WebDriverWait(
+            self.driver,
+            timeout,
+            poll_frequency=poll_frequency,
+            ignored_exceptions=ignored_exceptions,
+        ).until(lambda browser: condition())
