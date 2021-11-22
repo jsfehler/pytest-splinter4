@@ -1,0 +1,4 @@
+coverage
+pytest-localserver
+pytest-cov==3.0.0
+selenium<4.0

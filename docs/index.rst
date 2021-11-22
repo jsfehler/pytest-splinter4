@@ -7,4 +7,4 @@ Welcome to pytest-splinter's documentation!
 
 .. include:: ../AUTHORS.rst
 
-.. include:: ../CHANGES.rst
+.. include:: ../CHANGELOG.rst

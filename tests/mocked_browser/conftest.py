@@ -1,5 +1,5 @@
 """Configuration for pytest runner."""
-import mock
+import unittest.mock as mock
 
 import pytest
 
@@ -10,7 +10,7 @@ def splinter_session_scoped_browser():
     return False
 
 
-@pytest.yield_fixture(autouse=True)
+@pytest.fixture(autouse=True)
 def mocked_browser(browser_pool, request):
     """Mock splinter browser."""
     # to avoid re-using of cached browser from other tests
@@ -25,13 +25,23 @@ def mocked_browser(browser_pool, request):
         mocked_browser.driver_name = driver_name
         mocked_browser.html = u"<html></html>"
 
-        def save_screenshot(path):
-            with open(path, "w"):
-                pass
+        def screenshot(name="", suffix=".png"):
+            path = f"{name}{suffix}"
+            with open(path, "w") as f:
+                f.write('dummy')
+            return path
 
-        mocked_browser.driver.save_screenshot = save_screenshot
+        def html_snapshot(name="", suffix=".html"):
+            path = f"{name}{suffix}"
+            with open(path, "w") as f:
+                f.write('dummy')
+            return path
+
+        mocked_browser.screenshot.side_effect = screenshot
+        mocked_browser.html_snapshot.side_effect = html_snapshot
         return mocked_browser
 
-    patcher = mock.patch("pytest_splinter.plugin.splinter.Browser", mocked_browser)
+    patcher = mock.patch(
+        "pytest_splinter4.plugin.splinter.Browser", mocked_browser)
     yield patcher.start()
     patcher.stop()

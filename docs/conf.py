@@ -45,9 +45,9 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'pytest-splinter'
-AUTHOR = 'Anatoly Bubenkov, Paylogic International and others'
-copyright = u'2014, ' + AUTHOR
+project = u'pytest-splinter4'
+AUTHOR = 'Joshua Fehler, Anatoly Bubenkov, Paylogic International and others'
+copyright = u'2021, ' + AUTHOR
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

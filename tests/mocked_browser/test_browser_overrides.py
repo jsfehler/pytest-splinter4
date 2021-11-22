@@ -1,6 +1,6 @@
 """Browser overrides tests."""
 import time
-import mock
+import unittest.mock as mock
 
 import pytest
 

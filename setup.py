@@ -1,35 +1,28 @@
 """Setuptools entry point."""
-import codecs
 import os
 
 from setuptools import setup
 
-import pytest_splinter
+import pytest_splinter4
 
-dirname = os.path.dirname(__file__)
 
-long_description = (
-    codecs.open(os.path.join(dirname, 'README.rst'), encoding='utf-8').read() + '\n' +
-    codecs.open(os.path.join(dirname, 'AUTHORS.rst'), encoding='utf-8').read() + '\n' +
-    codecs.open(os.path.join(dirname, 'CHANGES.rst'), encoding='utf-8').read()
-)
+def read(filename):
+    path = os.path.join(os.path.dirname(__file__), filename)
+    with open(path, 'r') as f:
+        return f.read()
 
 setup(
-    name='pytest-splinter',
-    description='Splinter plugin for pytest testing framework',
-    long_description=long_description,
-    author='Anatoly Bubenkov, Paylogic International and others',
+    name='pytest-splinter4',
+    description='Pytest plugin for the splinter automation library',
+    long_description=read('README.rst'),
+    author='Joshua Fehler',
     license='MIT license',
-    author_email='bubenkoff@gmail.com',
-    version=pytest_splinter.__version__,
+    version=pytest_splinter4.__version__,
     include_package_data=True,
-    url='https://github.com/pytest-dev/pytest-splinter',
+    url='https://github.com/jsfehler/pytest-splinter4',
     install_requires=[
-        'setuptools',
-        'splinter>=0.13.0',
-        'selenium',
-        'pytest>=3.0.0',
-        'urllib3',
+        'splinter==0.16.0',
+        'pytest>=6.2.4',
     ],
     classifiers=[
         'Development Status :: 6 - Mature',
@@ -45,11 +38,11 @@ setup(
     ]
     + [
         ('Programming Language :: Python :: %s' % x)
-        for x in '3.6 3.7 3.8'.split()
+        for x in '3.7 3.8 3.9 3.10'.split()
     ],
     tests_require=['tox'],
     entry_points={'pytest11': [
-        'pytest-splinter=pytest_splinter.plugin',
+        'pytest-splinter4=pytest_splinter4.plugin',
     ]},
-    packages=['pytest_splinter'],
+    packages=['pytest_splinter4'],
 )

@@ -1,6 +1,4 @@
 """Patches for splinter."""
-from functools import partial
-
 from splinter.driver.webdriver import firefox
 
 from selenium.webdriver.common.action_chains import ActionChains  # pragma: no cover

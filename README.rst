@@ -1,43 +1,58 @@
-Splinter plugin for the pytest runner
-======================================
+pytest-splinter4
+================
 
-.. image:: https://badges.gitter.im/pytest-dev/pytest-splinter.svg
-   :alt: Join the chat at https://gitter.im/pytest-dev/pytest-splinter
-   :target: https://gitter.im/pytest-dev/pytest-splinter?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+A `pytest <http://pytest.org>`_ plugin for `splinter <https://splinter.readthedocs.io>`_.
 
-.. image:: https://img.shields.io/pypi/v/pytest-splinter.svg
-   :target: https://pypi.python.org/pypi/pytest-splinter
-.. image:: https://img.shields.io/pypi/pyversions/pytest-splinter.svg
-  :target: https://pypi.python.org/pypi/pytest-splinter
-.. image:: https://img.shields.io/coveralls/pytest-dev/pytest-splinter/master.svg
-   :target: https://coveralls.io/r/pytest-dev/pytest-splinter
-.. image:: https://travis-ci.org/pytest-dev/pytest-splinter.svg?branch=master
-    :target: https://travis-ci.org/pytest-dev/pytest-splinter
-.. image:: https://readthedocs.org/projects/pytest-splinter/badge/?version=latest
-    :target: https://readthedocs.org/projects/pytest-splinter/?badge=latest
+pytest-splinter4 is a fork of `pytest-splinter <https://github.com/pytest-dev/pytest-splinter>`_
+with added features and fixes to support newer versions of
+``pytest``, ``pytest-xdist``, and ``splinter >= 0.16.0.``
+
+.. image:: https://img.shields.io/pypi/v/pytest-splinter4.svg
+   :target: https://pypi.python.org/pypi/pytest-splinter4
+
+.. image:: https://img.shields.io/pypi/pyversions/pytest-splinter4.svg
+  :target: https://pypi.python.org/pypi/pytest-splinter4
+
+.. image:: https://img.shields.io/coveralls/jsfehler/pytest-splinter4/master.svg
+   :target: https://coveralls.io/r/jsfehler/pytest-splinter4
+
+.. image:: https://github.com/jsfehler/pytest-splinter4/workflows/CI/badge.svg
+    :target: https://github.com/jsfehler/pytest-splinter4/actions/workflows/main.yml
+    :alt: Build status
+
+.. image:: https://readthedocs.org/projects/pytest-splinter4/badge/?version=latest
+    :target: https://readthedocs.org/projects/pytest-splinter4/?badge=latest
     :alt: Documentation Status
 
 
-Install pytest-splinter
------------------------
+Installation
+------------
 
-::
+.. code-block:: bash
 
-    pip install pytest-splinter
+    python -m pip install pytest-splinter4
 
 
 Features
 --------
 
-The plugin provides a set of fixtures to use `splinter <https://splinter.readthedocs.io>`_
-for browser testing with `pytest <http://pytest.org>`_
+Sensible Defaults
++++++++++++++++++
 
 
-Fixtures
---------
+Driver executable_path argument
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+When using chrome, firefox, or edge, the `executable_path` driver argument has
+a default value set to also search for chrome/gecko/edgedriver in the current working directory.
+
+
+Browser Fixtures
+++++++++++++++++
+
+The following fixtures provide instances of ``splinter.Browser()``
 
 * browser
-    Get the splinter's Browser. Fixture is underneath session scoped, so browser process is started
+    A new instance of splinter's Browser. Fixture is session scoped, so browser process is started
     once per test session, but the state of the browser will be clean (current page is ``blank``, cookies clean).
 
 * session_browser
@@ -46,28 +61,30 @@ Fixtures
 
 * browser_instance_getter
     Function to create an instance of the browser. This fixture is required only if you need to have
-    multiple instances of the Browser in a single test at the same time. Example of usage:
+    multiple instances of the Browser in a single test at the same time. Example:
 
-.. code-block:: python
+    .. code-block:: python
 
-    @pytest.fixture
-    def admin_browser(request, browser_instance_getter):
-        """Admin browser fixture."""
-        # browser_instance_getter function receives parent fixture -- our admin_browser
-        return browser_instance_getter(request, admin_browser)
+        @pytest.fixture
+        def admin_browser(request, browser_instance_getter):
+            """Admin browser fixture."""
+            # browser_instance_getter function receives parent fixture -- our admin_browser
+            return browser_instance_getter(request, admin_browser)
 
-    def test_2_browsers(browser, admin_browser):
-        """Test using 2 browsers at the same time."""
-        browser.visit('http://google.com')
-        admin_browser.visit('http://admin.example.com')
+        def test_2_browsers(browser, admin_browser):
+            """Test using 2 browsers at the same time."""
+            browser.visit('http://google.com')
+            admin_browser.visit('http://admin.example.com')
+
+Selenium Fixtures
++++++++++++++++++
+
+The following fixtures provide support for selenium parameters.
+They are only used when Selenium based drivers are used.
 
 * splinter_selenium_implicit_wait
     Implicit wait timeout to be passed to Selenium webdriver.
     Fixture gets the value from the command-line option splinter-implicit-wait (see below)
-
-* splinter_wait_time
-    Explicit wait timeout (for waiting for explicit condition via `wait_for_condition`).
-    Fixture gets the value from the command-line option splinter-wait-time (see below)
 
 * splinter_selenium_speed
     Speed for Selenium, if not 0 then it will sleep between each selenium command.
@@ -78,27 +95,45 @@ Fixtures
     Socket timeout for communication between the webdriver and the browser.
     Fixture gets the value from the command-line option splinter-socket-timeout (see below)
 
+Splinter Fixtures
++++++++++++++++++
+
+The following fixtures provide support for splinter parameters.
+
+* splinter_wait_time
+    Explicit wait timeout (for waiting for explicit condition via `wait_for_condition`).
+    Default value is from the command-line option splinter-wait-time (see below)
+
 * splinter_webdriver
-    Splinter's webdriver name to use. Fixture gets the value from the command-line option
-    splinter-webdriver (see below). To make pytest-splinter always use certain webdriver, override a fixture
-    in your `conftest.py` file:
+    Splinter's webdriver name to use. Default value is from the command-line option
+    splinter-webdriver (see below).
 
-.. code-block:: python
+    To make pytest-splinter always use certain webdriver, override a fixture
+    in your `conftest.py` file. Example:
 
-    import pytest
+    .. code-block:: python
 
-    @pytest.fixture(scope='session')
-    def splinter_webdriver():
-        """Override splinter webdriver name."""
-        return 'chrome'
+        import pytest
+
+        @pytest.fixture(scope='session')
+        def splinter_webdriver():
+            """Override splinter webdriver name."""
+            return 'chrome'
 
 * splinter_remote_url
-    Splinter's webdriver remote url to use (optional). Fixture gets the value from the command-line option
-    splinter-remote-url (see below). Will be used only if selected webdriver name is 'remote'.
+    Webdriver remote url to use. Default value is from the command-line option
+    splinter-remote-url (see below).
+
+    This will only be used if the selected webdriver name is 'remote'.
+
+* splinter_remote_name
+    Name of the browser to use when running Remote Webdriver.
+
+    This will be used only if the selected webdriver name is 'remote'.
 
 * splinter_session_scoped_browser
-    pytest-splinter should use single browser instance per test session.
-    Fixture gets the value from the command-line option splinter-session-scoped-browser (see below)
+    Use a single browser instance per test session.
+    Default value is from the command-line option splinter-session-scoped-browser (see below)
 
 * splinter_file_download_dir
     Directory, to which browser will automatically download the files it
@@ -111,7 +146,7 @@ Fixtures
     By default it's the all known system mime types (via mimetypes standard library).
 
 * splinter_browser_load_condition
-    Browser load condition, python function which should return True.
+    Browser load condition, a python function which should return True.
     If function returns False, it will be run several times, until timeout below reached.
 
 * splinter_browser_load_timeout
@@ -133,25 +168,29 @@ Fixtures
 * splinter_driver_kwargs
     Webdriver keyword arguments, a dictionary which is passed to selenium
     webdriver's constructor (after applying firefox preferences)
-    
-.. code-block:: python
 
-    import pytest
-    from pathlib import Path
-    
-    @pytest.fixture
-    def splinter_driver_kwargs():
-        """
-        Webdriver kwargs for Firefox.
-        https://selenium-python.readthedocs.io/api.html#module-selenium.webdriver.firefox.webdriver
-        """
-        return {"service_log_path": Path("/log/directory/geckodriver.log")}
+    .. code-block:: python
+
+        import pytest
+        from pathlib import Path
+
+        @pytest.fixture
+        def splinter_driver_kwargs():
+            """
+            Webdriver kwargs for Firefox.
+            https://selenium-python.readthedocs.io/api.html#module-selenium.webdriver.firefox.webdriver
+            """
+            return {"service_log_path": Path("/log/directory/geckodriver.log")}
 
 * splinter_window_size
     Size of the browser window on browser initialization. Tuple in form (<width>, <height>). Default is (1366, 768)
 
+* splinter_logs_dir
+    Driver logs directory. Default is 'logs'.
+
 * splinter_screenshot_dir
-    pytest-splinter browser screenshot directory.
+    Browser screenshot directory. Default is 'logs/{test_function_name}'.
+
     This fixture gets the value from the command-line option
     `splinter-screenshot-dir` (see below).
 
@@ -162,19 +201,6 @@ Fixtures
 
 * splinter_screenshot_encoding
     Encoding of the `html` `screenshot` on test failure. UTF-8 by default.
-
-* splinter_screenshot_getter_html
-    Function to get browser html screenshot. By default, it saves `browser.html` with given path and
-    `splinter_screenshot_encoding` encoding.
-
-* splinter_screenshot_getter_png
-    Function to get browser image (png) screenshot. By default, it calls `browser.save_sceenshot`
-    with given path.
-
-* splinter_driver_executable
-    Filesystem path of the webdriver executable.
-    This fixture gets the value from the command-line option
-    `splinter-webdriver-executable` (see below).
 
 * splinter_browser_class
     Class to use for browser instance.
@@ -218,6 +244,9 @@ Command-line options
 
     For more details refer to the documentation for splinter and selenium.
 
+* `--splinter-remote-name`
+    Name of the browser to use when running Remote Webdriver.
+
 * `--splinter-session-scoped-browser`
     pytest-splinter should use a single browser instance per test session.
     Choices are 'true' or 'false' (default: 'true').
@@ -230,10 +259,6 @@ Command-line options
     pytest-splinter browser screenshot directory. Defaults to the current
     directory.
 
-* `--splinter-webdriver-executable`
-    Filesystem path of the webdriver executable. Used by chrome driver.
-    Defaults to the None in which case the shell PATH variable setting determines the location of the executable.
-
 * `--splinter-headless`
     Override `splinter_headless` fixture. Choices are 'true' or 'false', default: 'true'.
     http://splinter.readthedocs.io/en/latest/drivers/chrome.html#using-headless-option-for-chrome
@@ -242,7 +267,8 @@ Command-line options
 Browser fixture
 ---------------
 
-As mentioned above, browser is a fixture made by creating splinter's Browser object, but with some overrides.
+As mentioned above, the ``browser`` fixture is an instance of splinter's Browser object,
+but with some overrides.
 
 *  visit
     Added possibility to wait for condition on each browser visit by having a fixture.
@@ -255,7 +281,7 @@ As mentioned above, browser is a fixture made by creating splinter's Browser obj
 Automatic screenshots on test failure
 -------------------------------------
 
-When your functional test fails, it's important to know the reason.
+When a test fails, it's important to know the reason.
 This becomes hard when tests are being run on the continuous integration server,
 where you cannot debug (using --pdb).
 To simplify things, a special behaviour of the browser fixture is available,
@@ -292,28 +318,24 @@ In case taking a screenshot fails, a pytest warning will be issued, which
 can be viewed using the `-rw` argument for `pytest`.
 
 
-Python3 support
----------------
-
-Python3 is supported, check if you have recent version of splinter as it was added recently.
-
-
 Example
 -------
 
-test_your_test.py:
-
 .. code-block:: python
 
-    def test_some_browser_stuff(browser):
+    def test_using_a_browser(browser):
         """Test using real browser."""
         url = "http://www.google.com"
         browser.visit(url)
+
         browser.fill('q', 'splinter - python acceptance testing for web applications')
+
         # Find and click the 'search' button
         button = browser.find_by_name('btnK')
+
         # Interact with elements
         button.click()
+
         assert browser.is_text_present('splinter.cobrateam.info'), "splinter.cobrateam.info wasn't found... We need to"
         ' improve our SEO techniques'
 
@@ -322,7 +344,7 @@ Contact
 -------
 
 If you have questions, bug reports, suggestions, etc. please create an issue on
-the `GitHub project page <http://github.com/paylogic/pytest-splinter>`_.
+the `GitHub project page <http://github.com/jsfehler/pytest-splinter4>`_.
 
 
 License
@@ -330,7 +352,4 @@ License
 
 This software is licensed under the `MIT license <http://en.wikipedia.org/wiki/MIT_License>`_
 
-See `License file <https://github.com/paylogic/pytest-splinter/blob/master/LICENSE.txt>`_
-
-
-© 2014 Anatoly Bubenkov, Paylogic International and others.
+See `License file <https://github.com/jsfehler/pytest-splinter4/blob/master/LICENSE.txt>`_

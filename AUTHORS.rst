@@ -1,5 +1,5 @@
-Authors
-=======
+Authors (pytest-splinter)
+=========================
 
 `Anatoly Bubenkov <bubenkoff@gmail.com>`_
     original idea and implementation, new features and improvements

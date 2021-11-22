@@ -2,7 +2,7 @@
 
 Patches are temporary fixes for issues raised in we selenium google project:
 http://code.google.com/p/selenium/issues/detail?id=5175
-http://code.google.com/p/selenium/issues/detail?id=5176.
+
 """
 
 import time  # pragma: no cover

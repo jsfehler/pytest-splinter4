@@ -1,6 +1,7 @@
 """Tests for pytest-splinter django driver availability."""
+import unittest.mock as mock
+
 import pytest
-import mock
 
 
 @pytest.fixture(autouse=True)
@@ -19,7 +20,7 @@ def driverless_browser(request):
         mocked_browser.is_text_present.return_value = True
         return mocked_browser
 
-    with mock.patch("pytest_splinter.plugin.splinter.Browser", mocked_browser):
+    with mock.patch("pytest_splinter4.plugin.splinter.Browser", mocked_browser):
         yield
 
 
