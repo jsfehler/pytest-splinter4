@@ -21,7 +21,7 @@ import os
 
 sys.path.insert(0, os.path.abspath('..'))
 
-import pytest_splinter
+import pytest_splinter4
 
 # -- General configuration -----------------------------------------------------
 
