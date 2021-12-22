@@ -467,7 +467,9 @@ def _take_screenshot(
             "Could not save html snapshot: {}".format(e)))
 
     try:
-        screenshot_png_path = browser_instance.screenshot(screenshot_path)
+        screenshot_png_path = browser_instance.screenshot(
+            screenshot_path, unique_file=False,
+        )
     except Exception as e:  # NOQA
         warnings.warn(pytest.PytestWarning(
             "Could not save screenshot: {}".format(e)))
