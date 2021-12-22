@@ -5,7 +5,7 @@ A `pytest <http://pytest.org>`_ plugin for `splinter <https://splinter.readthedo
 
 pytest-splinter4 is a fork of `pytest-splinter <https://github.com/pytest-dev/pytest-splinter>`_
 with added features and fixes to support newer versions of
-``pytest``, ``pytest-xdist``, and ``splinter >= 0.16.0.``
+``pytest``, ``pytest-xdist``, and ``splinter >= 0.17.0.``
 
 .. image:: https://img.shields.io/pypi/v/pytest-splinter4.svg
    :target: https://pypi.python.org/pypi/pytest-splinter4
