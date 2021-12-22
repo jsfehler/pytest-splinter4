@@ -4,6 +4,7 @@ from selenium import webdriver
 
 
 def pytest_addoption(parser):
+    """Add selenium options lists to pytest options."""
     parser.addoption(
         "--chrome-arguments",
         action="append",

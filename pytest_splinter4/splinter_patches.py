@@ -1,7 +1,7 @@
 """Patches for splinter."""
-from splinter.driver.webdriver import firefox
-
 from selenium.webdriver.common.action_chains import ActionChains  # pragma: no cover
+
+from splinter.driver.webdriver import firefox
 
 
 def patch_webdriverelement():  # pragma: no cover

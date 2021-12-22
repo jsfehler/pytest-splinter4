@@ -19,7 +19,6 @@ RemoteWebDriver._base_execute = RemoteWebDriver.execute  # pragma: no cover
 
 def patch_webdriver():
     """Patch selenium webdriver to add functionality/fix issues."""
-
     # Apply the monkey patch to Firefox webdriver to disable native events
     # to avoid click on wrong elements, totally unpredictable
     # more info http://code.google.com/p/selenium/issues/detail?id=633
@@ -34,7 +33,7 @@ def patch_webdriver():
 
     def get_current_window_info(self):
         atts = self.execute_script(
-            "return [ window.id, window.name, document.title, document.url ];"
+            "return [ window.id, window.name, document.title, document.url ];",
         )
         atts = [att if att is not None and att else "undefined" for att in atts]
         return (self.current_window_handle, atts[0], atts[1], atts[2], atts[3])

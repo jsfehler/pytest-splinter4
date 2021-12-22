@@ -1,6 +1,5 @@
-import os
-
 import logging
+import os
 
 
 LOGGER = logging.getLogger(__name__)
@@ -13,8 +12,7 @@ class SplinterXdistPlugin:
         self.screenshot_dir = screenshot_dir
 
     def pytest_testnodedown(self, node, error):
-        """Copy screenshots back from remote nodes to have them on the master.
-        """
+        """Copy screenshots back from remote nodes to have them on the master."""
         workeroutput = getattr(node, "workeroutput", {})
 
         for screenshot in workeroutput.get("screenshots", []):
@@ -35,5 +33,5 @@ class SplinterXdistPlugin:
                 if encoding:
                     mode = 'w'
 
-                with open(filepath, mode, **dict(encoding=encoding) if encoding else {}) as fd:
+                with open(filepath, mode, **dict(encoding=encoding) if encoding else {}) as fd: # NOQA C408
                     fd.write(filename["content"])
