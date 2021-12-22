@@ -89,40 +89,53 @@ def Browser(*args, **kwargs):  # NOQA N802
 
 
 @pytest.fixture(scope="session")  # pragma: no cover
-def splinter_close_browser():
-    """Close browser fixture."""
+def splinter_close_browser() -> bool:
+    """Determines if the browser is closed at the end of a test.
+
+    Returns:
+        bool
+    """
     return True
 
 
 @pytest.fixture(scope="session")  # pragma: no cover
-def splinter_webdriver(request):
-    """Webdriver fixture."""
+def splinter_webdriver(request) -> str:
+    """Name of the Webdriver to use.
+
+    Returns:
+        str
+    """
     return request.config.option.splinter_webdriver
 
 
 @pytest.fixture(scope="session")  # pragma: no cover
-def splinter_remote_url(request):
-    """Remote webdriver url.
+def splinter_remote_url(request) -> str:
+    """URL for the Selenium Server used by Remote Webdriver.
 
-    :return: URL of remote webdriver.
+    Returns:
+        str
     """
     return request.config.option.splinter_remote_url
 
 
 @pytest.fixture(scope="session")  # pragma: no cover
-def splinter_remote_name(request):
+def splinter_remote_name(request) -> str:
     """Name of the browser used for Remote webdriver.
 
-    :return: str
+    Returns:
+        str
     """
     return request.config.option.splinter_remote_name
 
 
 @pytest.fixture(scope="session")  # pragma: no cover
-def splinter_selenium_socket_timeout(request):
-    """Return internal Selenium socket timeout (communication between webdriver and the browser).
+def splinter_selenium_socket_timeout(request) -> int:
+    """Internal Selenium socket timeout.
 
-    :return: Seconds.
+    ie: Communication between webdriver and the web browser.
+
+    Returns:
+        int: Timeout amount, in seconds.
     """
     return request.config.option.splinter_webdriver_socket_timeout
 
@@ -131,25 +144,28 @@ def splinter_selenium_socket_timeout(request):
 def splinter_selenium_implicit_wait(request):
     """Return Selenium implicit wait timeout.
 
-    :return: Seconds.
+    Returns:
+        Selenium implicit wait, in seconds.
     """
     return request.config.option.splinter_webdriver_implicit_wait
 
 
 @pytest.fixture(scope="session")  # pragma: no cover
-def splinter_wait_time(request):
+def splinter_wait_time(request) -> int:
     """Splinter explicit wait timeout.
 
-    :return: Seconds.
+    Returns:
+        int: Splinter wait time, in seconds.
     """
     return request.config.option.splinter_wait_time or 5
 
 
 @pytest.fixture(scope="session")  # pragma: no cover
-def splinter_selenium_speed(request):
-    """Selenium speed.
+def splinter_selenium_speed(request) -> int:
+    """Selenium speed, in seconds.
 
-    :return: Seconds.
+    Returns:
+        int
     """
     return request.config.option.splinter_webdriver_speed
 
