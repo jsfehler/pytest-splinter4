@@ -5,26 +5,28 @@ which is an object of splinter Browser class.
 """
 import codecs
 import functools  # pragma: no cover
-import warnings
-from http.client import HTTPException
 import logging
 import mimetypes  # pragma: no cover
 import os.path
 import re
+import warnings
+from http.client import HTTPException
+
+from _pytest import junitxml
 
 import pytest  # pragma: no cover
+
+from selenium.common.exceptions import WebDriverException
+from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
+from selenium.webdriver.support import wait
+
 import splinter  # pragma: no cover
-from _pytest import junitxml
 
 from urllib3.exceptions import MaxRetryError
 
-from selenium.webdriver.support import wait
-from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
-from selenium.common.exceptions import WebDriverException
-
 from .executable_path import get_executable_path
-from .webdriver_patches import patch_webdriver  # pragma: no cover
 from .splinter_patches import patch_webdriverelement  # pragma: no cover
+from .webdriver_patches import patch_webdriver  # pragma: no cover
 from .xdist_plugin import SplinterXdistPlugin
 
 LOGGER = logging.getLogger(__name__)
@@ -46,7 +48,7 @@ def _visit(self, old_visit, url):
 
 
 def _wait_for_condition(
-    self, condition=None, timeout=None, poll_frequency=0.5, ignored_exceptions=None
+    self, condition=None, timeout=None, poll_frequency=0.5, ignored_exceptions=None,
 ):
     """Wait for given javascript condition."""
     condition = functools.partial(condition or self.visit_condition, self)
@@ -71,7 +73,7 @@ html: {screenshot_html_file_name}
 """
 
 
-def Browser(*args, **kwargs):
+def Browser(*args, **kwargs):  # NOQA N802
     """Emulate splinter's Browser."""
     visit_condition = kwargs.pop("visit_condition")
     visit_condition_timeout = kwargs.pop("visit_condition_timeout")
@@ -190,28 +192,27 @@ def splinter_download_file_types():
 @pytest.fixture(scope="session")
 def splinter_firefox_profile_preferences(splinter_file_download_dir, splinter_download_file_types):
     """Firefox profile preferences."""
-
     firefox_profile_preferences = {
-            "browser.download.folderList": 2,
-            "browser.download.manager.showWhenStarting": False,
-            "browser.download.dir": splinter_file_download_dir,
-            "browser.helperApps.neverAsk.saveToDisk": splinter_download_file_types,
-            "browser.helperApps.alwaysAsk.force": False,
-            "pdfjs.disabled": True,  # disable internal ff pdf viewer to allow auto pdf download
-            "browser.cache.memory.enable": False,
-            "browser.sessionhistory.max_total_viewers": 0,
-            "network.http.pipelining": True,
-            "network.http.pipelining.maxrequests": 8,
-            "browser.startup.page": 0,
-            "browser.startup.homepage": "about:blank",
-            "startup.homepage_welcome_url": "about:blank",
-            "startup.homepage_welcome_url.additional": "about:blank",
-            "browser.startup.homepage_override.mstone": "ignore",
-            "toolkit.telemetry.reportingpolicy.firstRun": False,
-            "datareporting.healthreport.service.firstRun": False,
-            "browser.cache.disk.smart_size.first_run": False,
-            # Firefox hangs when the file is not found
-            "media.gmp-gmpopenh264.enabled": False,
+        "browser.download.folderList": 2,
+        "browser.download.manager.showWhenStarting": False,
+        "browser.download.dir": splinter_file_download_dir,
+        "browser.helperApps.neverAsk.saveToDisk": splinter_download_file_types,
+        "browser.helperApps.alwaysAsk.force": False,
+        "pdfjs.disabled": True,  # disable internal ff pdf viewer to allow auto pdf download
+        "browser.cache.memory.enable": False,
+        "browser.sessionhistory.max_total_viewers": 0,
+        "network.http.pipelining": True,
+        "network.http.pipelining.maxrequests": 8,
+        "browser.startup.page": 0,
+        "browser.startup.homepage": "about:blank",
+        "startup.homepage_welcome_url": "about:blank",
+        "startup.homepage_welcome_url.additional": "about:blank",
+        "browser.startup.homepage_override.mstone": "ignore",
+        "toolkit.telemetry.reportingpolicy.firstRun": False,
+        "datareporting.healthreport.service.firstRun": False,
+        "browser.cache.disk.smart_size.first_run": False,
+        # Firefox hangs when the file is not found
+        "media.gmp-gmpopenh264.enabled": False,
     }
 
     return firefox_profile_preferences
@@ -345,7 +346,7 @@ def browser_patches():
 
 @pytest.fixture(scope="session")
 def session_tmpdir(tmpdir_factory):
-    """pytest tmpdir which is session-scoped."""
+    """Pytest tmpdir which is session-scoped."""
     return tmpdir_factory.mktemp("pytest-splinter")
 
 
@@ -393,11 +394,9 @@ def get_args(
         # capatibility. Instead `moz:firefoxOptions` should be used:
         # https://github.com/mozilla/geckodriver#firefox-capabilities
         kwargs["desired_capabilities"]["moz:firefoxOptions"] = driver_kwargs.get(
-            "moz:firefoxOptions", {}
+            "moz:firefoxOptions", {},
         )
-        kwargs["desired_capabilities"]["moz:firefoxOptions"][
-            "profile"
-        ] = profile.encoded
+        kwargs["desired_capabilities"]["moz:firefoxOptions"]["profile"] = profile.encoded
 
     if driver_kwargs:
         kwargs.update(driver_kwargs)
@@ -460,7 +459,7 @@ def _take_screenshot(
     if request.node.splinter_failure.longrepr:
         reprtraceback = request.node.splinter_failure.longrepr.reprtraceback
         reprtraceback.extraline = _screenshot_extraline(
-            screenshot_png_path, screenshot_html_path
+            screenshot_png_path, screenshot_html_path,
         )
 
     try:
@@ -468,7 +467,7 @@ def _take_screenshot(
             encoding = request.getfixturevalue('splinter_screenshot_encoding')
 
             with codecs.open(
-                screenshot_html_path, encoding=encoding
+                screenshot_html_path, encoding=encoding,
             ) as html_fd:
                 with open(screenshot_png_path, "rb") as fd:
                     slaveoutput.setdefault("screenshots", []).append(
@@ -485,7 +484,7 @@ def _take_screenshot(
                                     "encoding": encoding,
                                 },
                             ],
-                        }
+                        },
                     )
     except Exception as e:  # NOQA
         warnings.warn(pytest.PytestWarning(
@@ -554,7 +553,6 @@ def browser_instance_getter(
 
     :return: function(parent). New instance of plugin.Browser class.
     """
-
     _chrome_options = request.getfixturevalue('chrome_options')
 
     _default_kwargs = request.getfixturevalue(
@@ -585,7 +583,7 @@ def browser_instance_getter(
                 visit_condition=splinter_browser_load_condition,
                 visit_condition_timeout=splinter_browser_load_timeout,
                 wait_time=splinter_wait_time,
-                **kwargs
+                **kwargs,
             )
         except Exception:  # NOQA
             if retry_count > 1:
@@ -596,7 +594,7 @@ def browser_instance_getter(
     def prepare_browser(request, parent, retry_count=3):
         splinter_webdriver = request.getfixturevalue("splinter_webdriver")
         splinter_session_scoped_browser = request.getfixturevalue(
-            "splinter_session_scoped_browser"
+            "splinter_session_scoped_browser",
         )
         splinter_close_browser = request.getfixturevalue(
             "splinter_close_browser")
@@ -614,7 +612,7 @@ def browser_instance_getter(
 
             def _take_screenshot_on_failure():
                 if splinter_make_screenshot_on_failure and getattr(
-                    request.node, "splinter_failure", True
+                    request.node, "splinter_failure", True,
                 ):
                     _take_screenshot(
                         request=request,
@@ -635,7 +633,7 @@ def browser_instance_getter(
                 browser.driver.implicitly_wait(splinter_selenium_implicit_wait)
                 browser.driver.set_speed(splinter_selenium_speed)
                 browser.driver.command_executor.set_timeout(
-                    splinter_selenium_socket_timeout
+                    splinter_selenium_socket_timeout,
                 )
                 browser.driver.command_executor._conn.timeout = (
                     splinter_selenium_socket_timeout
@@ -715,7 +713,7 @@ def pytest_configure(config):
     if config.pluginmanager.getplugin("xdist"):
         screenshot_dir = os.path.abspath(config.option.splinter_screenshot_dir)
         config.pluginmanager.register(
-            SplinterXdistPlugin(screenshot_dir=screenshot_dir)
+            SplinterXdistPlugin(screenshot_dir=screenshot_dir),
         )
 
 
