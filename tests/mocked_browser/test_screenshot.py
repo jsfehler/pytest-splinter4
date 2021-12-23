@@ -133,14 +133,14 @@ def test_browser_screenshot_xdist(pytester):
 
 
         def test_screenshot(browser):
-            def screenshot(name="", suffix=".png"):
-                path = f"{name}{suffix}"
+            def screenshot(name="", **kwargs):
+                path = f"{name}.png"
                 with open(path, "w") as f:
                     f.write('dummy')
                 return path
 
-            def html_snapshot(name="", suffix=".html"):
-                path = f"{name}{suffix}"
+            def html_snapshot(name="", **kwargs):
+                path = f"{name}.html"
                 with open(path, "w") as f:
                     f.write('dummy')
                 return path
