@@ -25,14 +25,14 @@ def mocked_browser(browser_pool, request):
         mocked_browser.driver_name = driver_name
         mocked_browser.html = u"<html></html>"
 
-        def screenshot(name="", suffix=".png"):
-            path = f"{name}{suffix}"
+        def screenshot(name='', **kwargs):
+            path = f"{name}.png"
             with open(path, "w") as f:
                 f.write('dummy')
             return path
 
-        def html_snapshot(name="", suffix=".html"):
-            path = f"{name}{suffix}"
+        def html_snapshot(name='', **kwargs):
+            path = f"{name}.html"
             with open(path, "w") as f:
                 f.write('dummy')
             return path
