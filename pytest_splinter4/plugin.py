@@ -17,7 +17,6 @@ from _pytest import junitxml
 import pytest  # pragma: no cover
 
 from selenium.common.exceptions import WebDriverException
-from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
 from selenium.webdriver.support import wait
 
 import splinter  # pragma: no cover
@@ -374,8 +373,6 @@ def splinter_browser_class(request):
 
 def get_args(
     driver=None,
-    firefox_pref=None,
-    firefox_prof_dir=None,
     remote_url=None,
     headless=False,
     driver_kwargs=None,
@@ -383,15 +380,9 @@ def get_args(
     """Construct arguments to be passed to webdriver on initialization."""
     kwargs = {}
 
-    firefox_profile_preferences = firefox_pref
-
     # TODO: Splinter needs to support remote headless as an argument
     if headless and driver in ['firefox', 'chrome']:
         kwargs["headless"] = headless
-
-    if driver == "firefox":
-        kwargs["profile_preferences"] = firefox_profile_preferences
-        kwargs["profile"] = firefox_prof_dir
 
     elif driver == "remote":
         kwargs["desired_capabilities"] = driver_kwargs.get(
@@ -400,19 +391,6 @@ def get_args(
         if remote_url:
             kwargs["command_executor"] = remote_url
         kwargs["keep_alive"] = True
-
-        profile = FirefoxProfile(firefox_prof_dir)
-        for key, value in firefox_profile_preferences.items():
-            profile.set_preference(key, value)
-        kwargs["desired_capabilities"]["firefox_profile"] = profile.encoded
-
-        # remote geckodriver does not support the firefox_profile desired
-        # capatibility. Instead `moz:firefoxOptions` should be used:
-        # https://github.com/mozilla/geckodriver#firefox-capabilities
-        kwargs["desired_capabilities"]["moz:firefoxOptions"] = driver_kwargs.get(
-            "moz:firefoxOptions", {},
-        )
-        kwargs["desired_capabilities"]["moz:firefoxOptions"]["profile"] = profile.encoded
 
     if driver_kwargs:
         kwargs.update(driver_kwargs)
@@ -543,6 +521,19 @@ def _browser_screenshot_session(
             )
 
 
+def _setup_firefox_profile(request, options):
+    """Put custom Firefox profile into an options object."""
+    splinter_firefox_profile_directory = request.getfixturevalue('splinter_firefox_profile_directory')
+    splinter_firefox_profile_preferences = request.getfixturevalue('splinter_firefox_profile_preferences')
+
+    # Create custom profile
+    options.set_preference('profile', splinter_firefox_profile_directory)
+
+    # Set profile preferences
+    for key, value in splinter_firefox_profile_preferences.items():
+        options.set_preference(key, value)
+
+
 @pytest.fixture(scope="session")
 def browser_instance_getter(
     request,
@@ -552,8 +543,6 @@ def browser_instance_getter(
     splinter_browser_load_timeout,
     splinter_driver_kwargs,
     splinter_remote_name,
-    splinter_firefox_profile_preferences,
-    splinter_firefox_profile_directory,
     splinter_make_screenshot_on_failure,
     splinter_remote_url,
     splinter_selenium_implicit_wait,
@@ -574,6 +563,7 @@ def browser_instance_getter(
     :return: function(parent). New instance of plugin.Browser class.
     """
     _chrome_options = request.getfixturevalue('chrome_options')
+    _firefox_options = request.getfixturevalue('firefox_options')
 
     _default_kwargs = request.getfixturevalue(
         '_splinter_driver_default_kwargs')
@@ -581,15 +571,23 @@ def browser_instance_getter(
     def get_browser(splinter_webdriver, retry_count=3):
 
         # Set options objects into kwargs
-        _default_kwargs['chrome']['options'] = _chrome_options
+        if splinter_webdriver == 'chrome':
+            _default_kwargs['chrome']['options'] = _chrome_options
+
+        elif splinter_webdriver == 'firefox':
+            _default_kwargs['firefox']['options'] = _firefox_options
+            _setup_firefox_profile(request, _firefox_options)
 
         if splinter_remote_name == 'chrome':
             _default_kwargs['remote']['options'] = _chrome_options
 
+        elif splinter_remote_name == 'firefox':
+            _default_kwargs['remote']['options'] = _firefox_options
+            _setup_firefox_profile(request, _firefox_options)
+
+
         kwargs = get_args(
             driver=splinter_webdriver,
-            firefox_pref=splinter_firefox_profile_preferences,
-            firefox_prof_dir=splinter_firefox_profile_directory,
             remote_url=splinter_remote_url,
             headless=splinter_headless,
             driver_kwargs={
@@ -673,7 +671,10 @@ def browser_instance_getter(
             if hasattr(browser, "driver"):
                 browser.visit_condition = splinter_browser_load_condition
                 browser.visit_condition_timeout = splinter_browser_load_timeout
-                browser.visit("about:blank")
+
+                # Let firefox preferences handle this.
+                if splinter_webdriver != 'firefox':
+                    browser.visit("about:blank")
 
         except (HTTPException, WebDriverException, MaxRetryError):
             return _replace_browser(
