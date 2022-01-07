@@ -157,14 +157,6 @@ The following fixtures provide support for splinter parameters.
     Browser explicit wait timeout in seconds, after this timeout the exception
     WaitUntilTimeout will be raised.
 
-* splinter_firefox_profile_preferences
-    Firefox profile preferences, a dictionary which is passed to selenium
-    webdriver's profile_preferences
-
-* splinter_firefox_profile_directory
-    Firefox profile directory to use as template for firefox profile created by selenium.
-    By default, it's an empty directly inside pytest_splinter/profiles/firefox
-
 * splinter_driver_kwargs
     Webdriver keyword arguments, a dictionary which is passed to selenium
     webdriver's constructor (after applying firefox preferences)
@@ -216,6 +208,17 @@ The following fixtures provide support for splinter parameters.
 
 * splinter_headless
     Run Chrome in headless mode. Defaults to false. http://splinter.readthedocs.io/en/latest/drivers/chrome.html#using-headless-option-for-chrome
+
+Firefox Only
+~~~~~~~~~~~~
+
+* splinter_firefox_profile_preferences
+    Firefox profile preferences, a dictionary which is passed to selenium
+    webdriver's profile_preferences
+
+* splinter_firefox_profile_directory
+    Firefox profile directory to use as template for firefox profile created by selenium.
+    By default, it's an empty directly inside pytest_splinter/profiles/firefox
 
 Command-line options
 --------------------

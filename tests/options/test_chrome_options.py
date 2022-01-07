@@ -1,4 +1,4 @@
-def test_ini(testdir):
+def test_chrome_options_ini(testdir):
     testdir.makeini("""
         [pytest]
         chrome_arguments =
@@ -21,7 +21,7 @@ def test_ini(testdir):
     assert result.ret == 0
 
 
-def test_command_line(testdir):
+def test_chrome_options_command_line(testdir):
     testdir.makepyfile("""
         def test_two(chrome_options):
             expected = [
