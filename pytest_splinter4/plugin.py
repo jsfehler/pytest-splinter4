@@ -89,7 +89,7 @@ def Browser(*args, **kwargs):  # NOQA N802
 
 @pytest.fixture(scope="session")  # pragma: no cover
 def splinter_close_browser() -> bool:
-    """Determines if the browser is closed at the end of a test.
+    """Determine if the browser is closed at the end of a test.
 
     Returns:
         bool
@@ -129,7 +129,7 @@ def splinter_remote_name(request) -> str:
 
 @pytest.fixture(scope="session")  # pragma: no cover
 def splinter_selenium_socket_timeout(request) -> int:
-    """Internal Selenium socket timeout.
+    """Set the internal Selenium socket timeout.
 
     ie: Communication between webdriver and the web browser.
 
@@ -523,8 +523,12 @@ def _browser_screenshot_session(
 
 def _setup_firefox_profile(request, options):
     """Put custom Firefox profile into an options object."""
-    splinter_firefox_profile_directory = request.getfixturevalue('splinter_firefox_profile_directory')
-    splinter_firefox_profile_preferences = request.getfixturevalue('splinter_firefox_profile_preferences')
+    splinter_firefox_profile_directory = request.getfixturevalue(
+        'splinter_firefox_profile_directory',
+    )
+    splinter_firefox_profile_preferences = request.getfixturevalue(
+        'splinter_firefox_profile_preferences',
+    )
 
     # Create custom profile
     options.set_preference('profile', splinter_firefox_profile_directory)
@@ -584,7 +588,6 @@ def browser_instance_getter(
         elif splinter_remote_name == 'firefox':
             _default_kwargs['remote']['options'] = _firefox_options
             _setup_firefox_profile(request, _firefox_options)
-
 
         kwargs = get_args(
             driver=splinter_webdriver,
