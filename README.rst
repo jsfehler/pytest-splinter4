@@ -5,20 +5,26 @@ A `pytest <http://pytest.org>`_ plugin for `splinter <https://splinter.readthedo
 
 pytest-splinter4 is a fork of `pytest-splinter <https://github.com/pytest-dev/pytest-splinter>`_
 with added features and fixes to support newer versions of
-``pytest``, ``pytest-xdist``, and ``splinter >= 0.17.0.``
+``pytest``, ``pytest-xdist``, ``splinter >= 0.17.0``, and ``selenium >= 4.0``.
 
 .. image:: https://img.shields.io/pypi/v/pytest-splinter4.svg
-   :target: https://pypi.python.org/pypi/pytest-splinter4
+    :alt: PyPI
+    :target: https://pypi.python.org/pypi/pytest-splinter4
 
 .. image:: https://img.shields.io/pypi/pyversions/pytest-splinter4.svg
-  :target: https://pypi.python.org/pypi/pytest-splinter4
+    :alt: PyPI - Python Version
+    :target: https://pypi.python.org/pypi/pytest-splinter4
 
-.. image:: https://img.shields.io/coveralls/jsfehler/pytest-splinter4/master.svg
-   :target: https://coveralls.io/r/jsfehler/pytest-splinter4
+.. image:: https://img.shields.io/github/license/jsfehler/pytest-splinter4.svg
+    :alt: GitHub
+    :target: https://github.com/jsfehler/pytest-splinter4/blob/master/LICENSE
 
 .. image:: https://github.com/jsfehler/pytest-splinter4/workflows/CI/badge.svg
     :target: https://github.com/jsfehler/pytest-splinter4/actions/workflows/main.yml
     :alt: Build status
+
+.. image:: https://codecov.io/gh/jsfehler/pytest-splinter4/branch/master/graph/badge.svg?token=C1vfu8YgWn
+   :target: https://codecov.io/gh/jsfehler/pytest-splinter4
 
 .. image:: https://readthedocs.org/projects/pytest-splinter4/badge/?version=latest
     :target: https://readthedocs.org/projects/pytest-splinter4/?badge=latest
