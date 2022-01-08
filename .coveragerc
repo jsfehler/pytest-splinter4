@@ -1,2 +1,3 @@
 [run]
+source=pytest_splinter4
 omit = tests/*
