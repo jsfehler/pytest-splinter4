@@ -1,3 +1,6 @@
+import pytest
+
+@pytest.mark.doit
 def test_driverless_splinter_browsers(pytester):
     """Test: Use non-selenium driver for splinter_webdriver fixture
 
@@ -8,14 +11,13 @@ def test_driverless_splinter_browsers(pytester):
     pytester.makepyfile("""
         import pytest
 
-
         @pytest.fixture(scope='session')
         def splinter_webdriver():
             return 'django'
 
 
         def test_non_selenium(browser):
-            browser.visit("/")
+            assert browser.driver_name == 'django'
     """)
 
     result = pytester.runpytest('-v')
