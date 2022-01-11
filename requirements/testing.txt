@@ -1,3 +1,4 @@
 pytest-localserver
 pytest-cov==3.0.0
 selenium==4.1.0
+django
