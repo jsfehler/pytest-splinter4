@@ -1,3 +1,6 @@
+import pytest
+
+
 def test_chrome_options_ini(testdir):
     testdir.makeini("""
         [pytest]
@@ -8,6 +11,13 @@ def test_chrome_options_ini(testdir):
     """)
 
     testdir.makepyfile("""
+        import pytest
+
+
+        @pytest.fixture(scope='session')
+        def splinter_webdriver():
+            return 'chrome'
+
         def test_one(chrome_options):
             expected = [
                 '--disable-gpu', '--start-maximized', 'disable-infobars',
@@ -23,6 +33,14 @@ def test_chrome_options_ini(testdir):
 
 def test_chrome_options_command_line(testdir):
     testdir.makepyfile("""
+        import pytest
+
+
+        @pytest.fixture(scope='session')
+        def splinter_webdriver():
+            return 'chrome'
+
+
         def test_two(chrome_options):
             expected = [
                 '--disable-gpu', '--start-maximized', 'disable-infobars',
