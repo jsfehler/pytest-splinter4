@@ -8,11 +8,11 @@ def test_firefox_options_ini(testdir):
     """)
 
     testdir.makepyfile("""
-        def test_one(chrome_options):
+        def test_one(firefox_options):
             expected = [
                 '--disable-gpu', '--start-maximized', 'disable-infobars',
             ]
-            assert chrome_options.arguments == expected
+            assert firefox_options.arguments == expected
 
     """)
 
