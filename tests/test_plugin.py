@@ -32,6 +32,7 @@ def simple_page(httpserver, browser, simple_page_content):
     browser.visit(httpserver.url)
 
 
+@pytest.mark.doit
 def test_browser(browser):
     """Check the browser fixture."""
     assert isinstance(browser, DriverAPI)
@@ -82,7 +83,6 @@ def test_download_file(
 
 
 @pytest.mark.parametrize("cookie_name", ["name1", "name2"])
-@pytest.mark.parametrize("splinter_webdriver", ["firefox"])
 def test_clean_cookies(
     httpserver,
     browser,
@@ -111,8 +111,7 @@ def test_clean_cookies(
 
 
 @pytest.mark.parametrize("check", [1, 2])
-@pytest.mark.parametrize("splinter_webdriver", ["firefox"])
-def test_restore_browser(browser, simple_page, check, splinter_webdriver):
+def test_restore_browser(browser, simple_page, check):
     """Test that browser is restored after failure automatically."""
     browser.quit()
 
