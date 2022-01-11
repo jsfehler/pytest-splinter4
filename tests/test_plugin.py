@@ -32,7 +32,6 @@ def simple_page(httpserver, browser, simple_page_content):
     browser.visit(httpserver.url)
 
 
-@pytest.mark.doit
 def test_browser(browser):
     """Check the browser fixture."""
     assert isinstance(browser, DriverAPI)
@@ -87,7 +86,6 @@ def test_clean_cookies(
     httpserver,
     browser,
     cookie_name,
-    splinter_webdriver,
     splinter_session_scoped_browser,
 ):
     """Test that browser has always clean state (no cookies set)."""
