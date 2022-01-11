@@ -554,10 +554,6 @@ def browser_instance_getter(
 
     :return: function(parent). New instance of plugin.Browser class.
     """
-    _chrome_options = request.getfixturevalue('chrome_options')
-    _edge_options = request.getfixturevalue('edge_options')
-    _firefox_options = request.getfixturevalue('firefox_options')
-
     _default_kwargs = request.getfixturevalue(
         '_splinter_driver_default_kwargs')
 
@@ -565,25 +561,32 @@ def browser_instance_getter(
 
         # Set options objects into kwargs
         if splinter_webdriver == 'chrome':
+            _chrome_options = request.getfixturevalue('chrome_options')
             _default_kwargs['chrome']['options'] = _chrome_options
 
         elif splinter_webdriver == 'edge':
+            _edge_options = request.getfixturevalue('edge_options')
             _default_kwargs['edge']['options'] = _edge_options
 
         elif splinter_webdriver == 'firefox':
+            _firefox_options = request.getfixturevalue('firefox_options')
             _default_kwargs['firefox']['options'] = _firefox_options
             _setup_firefox_profile(request, _firefox_options)
 
         # Remote
-        if splinter_remote_name == 'chrome':
-            _default_kwargs['remote']['options'] = _chrome_options
+        if splinter_remote_url:
+            if splinter_remote_name == 'chrome':
+                _chrome_options = request.getfixturevalue('chrome_options')
+                _default_kwargs['remote']['options'] = _chrome_options
 
-        elif splinter_remote_name == 'edge':
-            _default_kwargs['remote']['options'] = _edge_options
+            elif splinter_remote_name == 'edge':
+                _edge_options = request.getfixturevalue('edge_options')
+                _default_kwargs['remote']['options'] = _edge_options
 
-        elif splinter_remote_name == 'firefox':
-            _default_kwargs['remote']['options'] = _firefox_options
-            _setup_firefox_profile(request, _firefox_options)
+            elif splinter_remote_name == 'firefox':
+                _firefox_options = request.getfixturevalue('firefox_options')
+                _default_kwargs['remote']['options'] = _firefox_options
+                _setup_firefox_profile(request, _firefox_options)
 
         kwargs = get_args(
             driver=splinter_webdriver,

@@ -24,8 +24,22 @@ def driverless_browser(request):
         yield
 
 
-@pytest.mark.parametrize("splinter_webdriver", ["django", "flask"])
-def test_driverless_splinter_browsers(splinter_webdriver, browser):
-    """Test the driverless splinter browsers django and flask."""
-    browser.visit("/")
-    assert browser.is_text_present("Ok!") is True
+def test_driverless_splinter_browsers(pytester, browser):
+    """Test the driverless splinter browsers."""
+
+    pytester.makepyfile("""
+        import pytest
+
+
+        @pytest.fixture(scope='session')
+        def splinter_webdriver():
+            return 'django'
+
+
+        def test_two(browser):
+            browser.visit("/")
+            assert browser.is_text_present("Ok!") is True
+    """)
+
+    result = pytester.runpytest('-v')
+    assert result.ret == 0

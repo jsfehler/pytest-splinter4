@@ -77,13 +77,7 @@ def selenium_options(request, splinter_webdriver):
     Returns:
         Options
     """
-    rv = {
-        'chrome': _create_options(request, 'chrome'),
-        'firefox': _create_options(request, 'firefox'),
-        'edge': _create_options(request, 'edge'),
-    }
-
-    return rv[splinter_webdriver]
+    return _create_options(request, splinter_webdriver)
 
 
 @pytest.fixture(scope='session')
@@ -92,7 +86,6 @@ def chrome_options(selenium_options):
 
     Returns:
         selenium.webdriver.chrome.options.Options
-
     """
     return selenium_options
 
@@ -103,7 +96,6 @@ def edge_options(selenium_options):
 
     Returns:
         selenium.webdriver.edge.options.Options
-
     """
     return selenium_options
 
@@ -114,6 +106,5 @@ def firefox_options(selenium_options):
 
     Returns:
         selenium.webdriver.firefox.options.Options
-
     """
     return selenium_options
