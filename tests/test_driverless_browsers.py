@@ -1,6 +1,3 @@
-import pytest
-
-@pytest.mark.doit
 def test_driverless_splinter_browsers(pytester):
     """Test: Use non-selenium driver for splinter_webdriver fixture
 
