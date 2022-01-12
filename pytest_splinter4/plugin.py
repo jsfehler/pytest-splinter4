@@ -398,27 +398,6 @@ def get_args(
 
 
 @pytest.fixture(scope="session")
-def splinter_screenshot_getter_png():
-    """Screenshot getter function: png."""
-
-    def getter(browser, path):
-        browser.driver.save_screenshot(path)
-
-    return getter
-
-
-@pytest.fixture(scope="session")
-def splinter_screenshot_getter_html(splinter_screenshot_encoding):
-    """Screenshot getter function: html."""
-
-    def getter(browser, path):
-        with codecs.open(path, "w", encoding=splinter_screenshot_encoding) as fd:
-            fd.write(browser.html)
-
-    return getter
-
-
-@pytest.fixture(scope="session")
 def splinter_clean_cookies_urls():
     """List of urls to clean cookies on their domains."""
     return []
@@ -429,8 +408,6 @@ def _take_screenshot(
     browser_instance,
     fixture_name,
     session_tmpdir,
-    splinter_screenshot_getter_html,
-    splinter_screenshot_getter_png,
 ):
     """Capture a screenshot as .png and .html.
 
@@ -478,8 +455,6 @@ def _take_screenshot(
             "Could not save screenshot: {}".format(e)))
 
     if request.node.splinter_failure.longrepr:
-        splinter_screenshot_getter_html(browser_instance, screenshot_html_path)
-        splinter_screenshot_getter_png(browser_instance, screenshot_png_path)
         reprtraceback = request.node.splinter_failure.longrepr.reprtraceback
         reprtraceback.extraline = _screenshot_extraline(
             screenshot_png_path, screenshot_html_path,
@@ -543,8 +518,6 @@ def _browser_screenshot_session(
                 fixture_name=name,
                 session_tmpdir=session_tmpdir,
                 browser_instance=value,
-                splinter_screenshot_getter_html=splinter_screenshot_getter_html,
-                splinter_screenshot_getter_png=splinter_screenshot_getter_png,
             )
 
 
@@ -586,8 +559,6 @@ def browser_instance_getter(
     splinter_headless,
     session_tmpdir,
     browser_pool,
-    splinter_screenshot_getter_html,
-    splinter_screenshot_getter_png,
 ):
     """Splinter browser instance getter.
 
@@ -669,8 +640,6 @@ def browser_instance_getter(
                         fixture_name=parent.__name__,
                         session_tmpdir=session_tmpdir,
                         browser_instance=browser,
-                        splinter_screenshot_getter_html=splinter_screenshot_getter_html,
-                        splinter_screenshot_getter_png=splinter_screenshot_getter_png,
                     )
 
             request.addfinalizer(_take_screenshot_on_failure)
