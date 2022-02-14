@@ -127,22 +127,3 @@ def test_restore_browser_connection(
 
     browser.driver.command_executor._conn.request = raises
     browser.reload()
-
-
-@pytest.mark.parametrize("splinter_webdriver", ["firefox"])
-def test_speed(browser, splinter_webdriver):
-    """Test browser's driver set_speed and get_speed."""
-    browser.driver.set_speed(2)
-    assert browser.driver.get_speed() == 2
-
-
-@pytest.mark.parametrize("splinter_webdriver", ["firefox"])
-def test_get_current_window_info(browser, splinter_webdriver):
-    """Test browser's driver get_current_window_info."""
-    assert len(browser.driver.get_current_window_info()) == 5
-
-
-@pytest.mark.parametrize("splinter_webdriver", ["firefox"])
-def test_current_window_is_main(browser, splinter_webdriver):
-    """Test browser's driver current_window_is_main."""
-    assert browser.driver.current_window_is_main()
