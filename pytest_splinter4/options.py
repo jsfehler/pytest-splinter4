@@ -47,7 +47,7 @@ def _create_options(request, name: str):
 
     Arguments:
         name (str): Name of the options object to create. One of:
-            chrome, edge, firefox
+            chrome, edge, firefox, remote
 
     Returns:
         Options
@@ -71,13 +71,18 @@ def _create_options(request, name: str):
 
 
 @pytest.fixture(scope='session')
-def selenium_options(request, splinter_webdriver):
+def selenium_options(request, splinter_webdriver, splinter_remote_name):
     """Get the correct Options object for the current driver.
 
     Returns:
         Options
     """
-    return _create_options(request, splinter_webdriver)
+    name = splinter_webdriver
+
+    if splinter_webdriver == 'remote':
+        name = splinter_remote_name
+
+    return _create_options(request, name)
 
 
 @pytest.fixture(scope='session')
