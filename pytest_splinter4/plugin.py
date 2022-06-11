@@ -24,7 +24,6 @@ import splinter  # pragma: no cover
 from urllib3.exceptions import MaxRetryError
 
 from .executable_path import get_executable_path
-from .splinter_patches import patch_webdriverelement  # pragma: no cover
 from .webdriver_patches import patch_webdriver  # pragma: no cover
 from .xdist_plugin import SplinterXdistPlugin
 
@@ -356,7 +355,6 @@ def browser_pool(request, splinter_close_browser):
 def browser_patches():
     """Browser monkey patches."""
     patch_webdriver()
-    patch_webdriverelement()
 
 
 @pytest.fixture(scope="session")
