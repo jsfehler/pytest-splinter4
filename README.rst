@@ -52,6 +52,48 @@ When using chrome, firefox, or edge, the `executable_path` driver argument has
 a default value set to also search for chrome/gecko/edgedriver in the current working directory.
 
 
+Selenium Options
+++++++++++++++++
+
+For each of the three supported browsers (ie: Chrome, Firefox, Edge),
+Selenium Options Arguments can be specified on the command line or in an ini file.
+
+Console:
+
+.. code-block:: console
+
+    --chrome-arguments = --disable-gpu
+    --chrome-arguments = --headless
+
+Ini:
+
+.. code-block:: console
+
+    chrome-arguments =
+        --disable-gpu
+        --headless
+
+
+Selenium Options objects can also be accessed via the `<browser_name>_options` fixtures.
+These fixtures should always return an Options object and will always be used when instantiating the browser.
+
+The generic `selenium_options` fixture will return the correct Options object for the
+current browser, providing a quick way to add or modify Options before the start of a test.
+
+Example: Add a custom profile path.
+
+.. code-block:: python
+
+    @pytest.fixture(scope='session')
+    def firefox_options(selenium_options):
+        selenium_options.set_preference(
+            'profile',
+            os.path.join(os.path.dirname(__file__), "profiles", "firefox"),
+        )
+
+        return selenium_options
+
+
 Browser Fixtures
 ++++++++++++++++
 
@@ -222,9 +264,6 @@ Firefox Only
     Firefox profile preferences, a dictionary which is passed to selenium
     webdriver's profile_preferences
 
-* splinter_firefox_profile_directory
-    Firefox profile directory to use as template for firefox profile created by selenium.
-    By default, it's an empty directly inside pytest_splinter/profiles/firefox
 
 Command-line options
 --------------------

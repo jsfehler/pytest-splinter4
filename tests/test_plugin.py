@@ -82,12 +82,10 @@ def test_download_file(
 
 
 @pytest.mark.parametrize("cookie_name", ["name1", "name2"])
-@pytest.mark.parametrize("splinter_webdriver", ["firefox"])
 def test_clean_cookies(
     httpserver,
     browser,
     cookie_name,
-    splinter_webdriver,
     splinter_session_scoped_browser,
 ):
     """Test that browser has always clean state (no cookies set)."""
@@ -111,8 +109,7 @@ def test_clean_cookies(
 
 
 @pytest.mark.parametrize("check", [1, 2])
-@pytest.mark.parametrize("splinter_webdriver", ["firefox"])
-def test_restore_browser(browser, simple_page, check, splinter_webdriver):
+def test_restore_browser(browser, simple_page, check):
     """Test that browser is restored after failure automatically."""
     browser.quit()
 

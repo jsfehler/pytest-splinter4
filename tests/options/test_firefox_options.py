@@ -1,18 +1,17 @@
 def test_firefox_options_ini(testdir):
     testdir.makeini("""
         [pytest]
-        chrome_arguments =
-            --disable-gpu
-            --start-maximized
-            disable-infobars
+        firefox_arguments =
+            -private-window
+            -foreground
     """)
 
     testdir.makepyfile("""
-        def test_one(chrome_options):
+        def test_one(firefox_options):
             expected = [
-                '--disable-gpu', '--start-maximized', 'disable-infobars',
+                '-private-window', '-foreground',
             ]
-            assert chrome_options.arguments == expected
+            assert firefox_options.arguments == expected
 
     """)
 

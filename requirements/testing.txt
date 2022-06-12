@@ -1,3 +1,6 @@
 pytest-localserver
 pytest-cov==3.0.0
 selenium==4.1.0
+Django==3.2.11
+lxml
+cssselect

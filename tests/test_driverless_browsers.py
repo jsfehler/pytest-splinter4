@@ -1,31 +1,21 @@
-"""Tests for pytest-splinter django driver availability."""
-import unittest.mock as mock
+def test_driverless_splinter_browsers(pytester):
+    """Test: Use non-selenium driver for splinter_webdriver fixture
 
-import pytest
-
-
-@pytest.fixture(autouse=True)
-def driverless_browser(request):
-    """
-    Mock splinter browser specifically for driverless browsers.
-
-    Django and Flask browsers extends the LxmlDriver and doesn't provide a
-    driver attribute.
+    When splinter_webdriver is changed to a non-selenium driver
+    Then the browser fixture can be loaded successfully
     """
 
-    def mocked_browser(driver_name, *args, **kwargs):
-        mocked_browser = mock.Mock()
-        del mocked_browser.driver  # force AttributeError
-        mocked_browser.driver_name = driver_name
-        mocked_browser.is_text_present.return_value = True
-        return mocked_browser
+    pytester.makepyfile("""
+        import pytest
 
-    with mock.patch("pytest_splinter4.plugin.splinter.Browser", mocked_browser):
-        yield
+        @pytest.fixture(scope='session')
+        def splinter_webdriver():
+            return 'django'
 
 
-@pytest.mark.parametrize("splinter_webdriver", ["django", "flask"])
-def test_driverless_splinter_browsers(splinter_webdriver, browser):
-    """Test the driverless splinter browsers django and flask."""
-    browser.visit("/")
-    assert browser.is_text_present("Ok!") is True
+        def test_non_selenium(browser):
+            assert browser.driver_name == 'django'
+    """)
+
+    result = pytester.runpytest('-v')
+    assert result.ret == 0
