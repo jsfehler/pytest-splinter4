@@ -501,9 +501,8 @@ def _browser_screenshot_session(
     if not splinter_session_scoped_browser:
         return
 
-    fixture_values = getattr(request, "_fixture_values", {})
-
-    for name, value in fixture_values.items():
+    for name in request.fixturenames:
+        value = request.getfixturevalue(name)
         should_take_screenshot = (
             hasattr(value, "__splinter_browser__")
             and splinter_make_screenshot_on_failure
