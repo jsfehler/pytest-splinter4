@@ -18,6 +18,9 @@ import pytest  # pragma: no cover
 
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.support import wait
+from selenium.webdriver.chrome.service import Service as ChromeService
+from selenium.webdriver.edge.service import Service as EdgeService
+from selenium.webdriver.firefox.service import Service as FirefoxService
 
 import splinter  # pragma: no cover
 
@@ -93,7 +96,7 @@ def splinter_close_browser() -> bool:
     Returns:
         bool
     """
-    return True
+    return False
 
 
 @pytest.fixture(scope="session")  # pragma: no cover
@@ -272,7 +275,9 @@ def _splinter_driver_default_kwargs(splinter_logs_dir, splinter_remote_name):
 
     driver_kwargs = {
         'chrome': {
-            'executable_path': get_executable_path(cwd, 'chromedriver'),
+            #'service': ChromeService(
+            #    executable_path=get_executable_path(cwd, 'chromedriver'),
+            #),
             'service_args': [
                 '--verbose',
                 f"--log-path={splinter_logs_dir}/chromedriver.log",
@@ -280,12 +285,16 @@ def _splinter_driver_default_kwargs(splinter_logs_dir, splinter_remote_name):
             'options': options['chrome'],
         },
         'firefox': {
-            'executable_path': get_executable_path(cwd, 'geckodriver'),
-            'service_log_path': f"{splinter_logs_dir}/geckodriver.log",
+            'service': FirefoxService(
+            #    executable_path=get_executable_path(cwd, 'geckodriver'),
+                service_log_path=f"{splinter_logs_dir}/geckodriver.log",
+            ),
             'options': options['firefox'],
         },
         'edge': {
-            'executable_path': get_executable_path(cwd, 'edgedriver'),
+        #    'service': EdgeService(
+            #    executable_path=get_executable_path(cwd, 'edgedriver'),
+            #),
             'options': options['edge'],
         },
         'remote': {},
@@ -306,7 +315,8 @@ def splinter_window_size():
 @pytest.fixture(scope="session")
 def splinter_session_scoped_browser(request):
     """Flag to keep single browser per test session."""
-    return request.config.option.splinter_session_scoped_browser == "true"
+    return False
+    #return request.config.option.splinter_session_scoped_browser == "true"
 
 
 @pytest.fixture(scope="session")
@@ -383,9 +393,6 @@ def get_args(
         kwargs["headless"] = headless
 
     elif driver == "remote":
-        kwargs["desired_capabilities"] = driver_kwargs.get(
-            "desired_capabilities", {})
-
         if remote_url:
             kwargs["command_executor"] = remote_url
         kwargs["keep_alive"] = True
@@ -618,14 +625,14 @@ def browser_instance_getter(
         splinter_close_browser = request.getfixturevalue(
             "splinter_close_browser")
         browser_key = id(parent)
-        browser = browser_pool.get(browser_key)
-        if not splinter_session_scoped_browser:
-            browser = get_browser(splinter_webdriver)
-            if splinter_close_browser:
-                request.addfinalizer(browser.quit)
-        elif not browser:
-            browser = browser_pool[browser_key] = get_browser(
-                splinter_webdriver)
+        #browser = browser_pool.get(browser_key)
+        #if not splinter_session_scoped_browser:
+        browser = get_browser(splinter_webdriver)
+        if splinter_close_browser:
+            request.addfinalizer(browser.quit)
+        #elif not browser:
+        #    browser = browser_pool[browser_key] = get_browser(
+        #        splinter_webdriver)
 
         if request.scope == "function":
 
@@ -713,7 +720,7 @@ def browser(request, browser_instance_getter):
     return browser_instance_getter(request, browser)
 
 
-@pytest.fixture(scope="session")
+#@pytest.fixture(scope="session")
 def session_browser(request, browser_instance_getter):
     """Session scoped browser fixture."""
     return browser_instance_getter(request, session_browser)
@@ -764,7 +771,7 @@ def pytest_addoption(parser):  # pragma: no cover
         help="splinter: Name of the browser to use when running Remote Webdriver.",
         metavar="BROWSER_NAME",
         dest="splinter_remote_name",
-        default="chrome",
+        default="firefox",
     )
     group.addoption(
         "--splinter-wait-time",
