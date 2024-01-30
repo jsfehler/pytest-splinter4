@@ -18,6 +18,9 @@ import pytest  # pragma: no cover
 
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.support import wait
+from selenium.webdriver.chrome.service import Service as ChromeService
+from selenium.webdriver.edge.service import Service as EdgeService
+from selenium.webdriver.firefox.service import Service as FirefoxService
 
 import splinter  # pragma: no cover
 
@@ -272,20 +275,24 @@ def _splinter_driver_default_kwargs(splinter_logs_dir, splinter_remote_name):
 
     driver_kwargs = {
         'chrome': {
-            'executable_path': get_executable_path(cwd, 'chromedriver'),
-            'service_args': [
-                '--verbose',
-                f"--log-path={splinter_logs_dir}/chromedriver.log",
-            ],
+            'service': ChromeService(
+                executable_path=get_executable_path(cwd, 'chromedriver'),
+                log_output=f"{splinter_logs_dir}/chromedriver.log",
+                service_args=['--verbose'],
+            ),
             'options': options['chrome'],
         },
         'firefox': {
-            'executable_path': get_executable_path(cwd, 'geckodriver'),
-            'service_log_path': f"{splinter_logs_dir}/geckodriver.log",
+            'service': FirefoxService(
+                executable_path=get_executable_path(cwd, 'geckodriver'),
+                log_output=f"{splinter_logs_dir}/geckodriver.log",
+            ),
             'options': options['firefox'],
         },
         'edge': {
-            'executable_path': get_executable_path(cwd, 'edgedriver'),
+            'service': EdgeService(
+                executable_path=get_executable_path(cwd, 'edgedriver'),
+        ),
             'options': options['edge'],
         },
         'remote': {},
@@ -383,9 +390,6 @@ def get_args(
         kwargs["headless"] = headless
 
     elif driver == "remote":
-        kwargs["desired_capabilities"] = driver_kwargs.get(
-            "desired_capabilities", {})
-
         if remote_url:
             kwargs["command_executor"] = remote_url
         kwargs["keep_alive"] = True
