@@ -18,6 +18,7 @@ import pytest  # pragma: no cover
 
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.support import wait
+from selenium.webdriver.firefox.service import Service as FirefoxService
 
 import splinter  # pragma: no cover
 
@@ -280,8 +281,10 @@ def _splinter_driver_default_kwargs(splinter_logs_dir, splinter_remote_name):
             'options': options['chrome'],
         },
         'firefox': {
-            'executable_path': get_executable_path(cwd, 'geckodriver'),
-            'service_log_path': f"{splinter_logs_dir}/geckodriver.log",
+            'service': FirefoxService(
+                executable_path=get_executable_path(cwd, 'geckodriver'),
+                log_output=f"{splinter_logs_dir}/geckodriver.log",
+            ),
             'options': options['firefox'],
         },
         'edge': {
