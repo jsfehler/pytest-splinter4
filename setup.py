@@ -21,7 +21,7 @@ setup(
     include_package_data=True,
     url='https://github.com/jsfehler/pytest-splinter4',
     install_requires=[
-        'splinter>=0.18.0',
+        'splinter>=0.21.0',
         'pytest>=8.0.0',
     ],
     classifiers=[
