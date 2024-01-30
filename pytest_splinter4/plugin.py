@@ -661,13 +661,13 @@ def browser_instance_getter(
                     browser.driver.set_window_size(*splinter_window_size)
 
             try:
-                browser.cookies.delete()
+                browser.cookies.delete_all()
             except (IOError, HTTPException, WebDriverException):
                 LOGGER.warning("Error cleaning browser cookies", exc_info=True)
 
             for url in splinter_clean_cookies_urls:
                 browser.visit(url)
-                browser.cookies.delete()
+                browser.cookies.delete_all()
 
             if hasattr(browser, "driver"):
                 browser.visit_condition = splinter_browser_load_condition
