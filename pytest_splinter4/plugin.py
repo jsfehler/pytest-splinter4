@@ -275,19 +275,17 @@ def _splinter_driver_default_kwargs(splinter_logs_dir, splinter_remote_name):
 
     driver_kwargs = {
         'chrome': {
-            #'service': ChromeService(
-            #    executable_path=get_executable_path(cwd, 'chromedriver'),
-            #),
-            'service_args': [
-                '--verbose',
-                f"--log-path={splinter_logs_dir}/chromedriver.log",
-            ],
+            'service': ChromeService(
+            #   executable_path=get_executable_path(cwd, 'chromedriver'),
+                log_output=f"{splinter_logs_dir}/chromedriver.log",
+                service_args=['--verbose'],
+            ),
             'options': options['chrome'],
         },
         'firefox': {
             'service': FirefoxService(
-            #    executable_path=get_executable_path(cwd, 'geckodriver'),
-                service_log_path=f"{splinter_logs_dir}/geckodriver.log",
+            #   executable_path=get_executable_path(cwd, 'geckodriver'),
+                log_output=f"{splinter_logs_dir}/geckodriver.log",
             ),
             'options': options['firefox'],
         },
