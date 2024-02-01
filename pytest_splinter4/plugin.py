@@ -276,7 +276,7 @@ def _splinter_driver_default_kwargs(splinter_logs_dir, splinter_remote_name):
     driver_kwargs = {
         'chrome': {
             'service': ChromeService(
-                executable_path=get_executable_path(cwd, 'chromedriver'),
+                # executable_path=get_executable_path(cwd, 'chromedriver'),
                 log_output=f"{splinter_logs_dir}/chromedriver.log",
                 service_args=['--verbose'],
             ),
@@ -284,14 +284,14 @@ def _splinter_driver_default_kwargs(splinter_logs_dir, splinter_remote_name):
         },
         'firefox': {
             'service': FirefoxService(
-                executable_path=get_executable_path(cwd, 'geckodriver'),
+                # executable_path=get_executable_path(cwd, 'geckodriver'),
                 log_output=f"{splinter_logs_dir}/geckodriver.log",
             ),
             'options': options['firefox'],
         },
         'edge': {
             'service': EdgeService(
-                executable_path=get_executable_path(cwd, 'edgedriver'),
+                # executable_path=get_executable_path(cwd, 'edgedriver'),
             ),
             'options': options['edge'],
         },
@@ -390,9 +390,6 @@ def get_args(
         kwargs["headless"] = headless
 
     elif driver == "remote":
-        kwargs["desired_capabilities"] = driver_kwargs.get(
-            "desired_capabilities", {})
-
         if remote_url:
             kwargs["command_executor"] = remote_url
         kwargs["keep_alive"] = True
