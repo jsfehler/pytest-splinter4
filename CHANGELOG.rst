@@ -1,6 +1,18 @@
 Changelog
 =========
 
+0.4.0
+-----
+
+Changed
++++++++
+- Bumped minimum Python version to 3.8
+- Add Python 3.11 and 3.12 support
+
+Fixed
++++++
+- Update cookies handling to support recent splinter versions
+
 0.3.0
 -----
 
