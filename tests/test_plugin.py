@@ -37,11 +37,6 @@ def test_browser(browser):
     assert isinstance(browser, DriverAPI)
 
 
-def test_session_browser(session_browser):
-    """Check the browser fixture."""
-    assert isinstance(session_browser, DriverAPI)
-
-
 @pytest.mark.skip(reason="Unnecessary test")
 @pytest.mark.parametrize(
     ("file_extension", "mime_type"),

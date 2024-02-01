@@ -718,12 +718,6 @@ def browser(request, browser_instance_getter):
     return browser_instance_getter(request, browser)
 
 
-#@pytest.fixture(scope="session")
-def session_browser(request, browser_instance_getter):
-    """Session scoped browser fixture."""
-    return browser_instance_getter(request, session_browser)
-
-
 @pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_makereport(item, call):
     """Assign the report to the item for futher usage."""
