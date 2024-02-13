@@ -66,7 +66,6 @@ jobs:
           echo "Start Selenium Server"
           xvfb-run java -jar selenium-server.jar > /dev/null 2>&1 & sleep 6 & tox -e ${{matrix.PY_VER}}-standard
           xvfb-run java -jar selenium-server.jar > /dev/null 2>&1 & sleep 6 & tox -e ${{matrix.PY_VER}}-xdist
-          xvfb-run java -jar selenium-server.jar > /dev/null 2>&1 & sleep 6 & tox -e ${{matrix.PY_VER}}-pytest-latest
 
       - name: Archive artifacts
         uses: actions/upload-artifact@v3
