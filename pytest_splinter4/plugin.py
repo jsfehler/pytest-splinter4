@@ -284,6 +284,7 @@ def _splinter_driver_default_kwargs(splinter_logs_dir, splinter_remote_name):
         'firefox': {
             'service': FirefoxService(
                 log_output=f"{splinter_logs_dir}/geckodriver.log",
+                service_args=['--log', 'debug']
             ),
             'options': options['firefox'],
         },
