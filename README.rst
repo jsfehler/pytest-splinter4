@@ -61,10 +61,6 @@ The following fixtures provide instances of ``splinter.Browser()``
     A new instance of splinter's Browser. Fixture is session scoped, so browser process is started
     once per test session, but the state of the browser will be clean (current page is ``blank``, cookies clean).
 
-* session_browser
-    The same as ``browser`` except the lifetime. This fixture is session-scoped so will only be finalized at the
-    end of the whole test session. Useful if you want to speedup your test suite paying with reduced test isolation.
-
 * browser_instance_getter
     Function to create an instance of the browser. This fixture is required only if you need to have
     multiple instances of the Browser in a single test at the same time. Example:
@@ -136,10 +132,6 @@ The following fixtures provide support for splinter parameters.
     Name of the browser to use when running Remote Webdriver.
 
     This will be used only if the selected webdriver name is 'remote'.
-
-* splinter_session_scoped_browser
-    Use a single browser instance per test session.
-    Default value is from the command-line option splinter-session-scoped-browser (see below)
 
 * splinter_file_download_dir
     Directory, to which browser will automatically download the files it
@@ -255,10 +247,6 @@ Command-line options
 
 * `--splinter-remote-name`
     Name of the browser to use when running Remote Webdriver.
-
-* `--splinter-session-scoped-browser`
-    pytest-splinter should use a single browser instance per test session.
-    Choices are 'true' or 'false' (default: 'true').
 
 * `--splinter-make-screenshot-on-failure`
     pytest-splinter should take browser screenshots on test failure.
