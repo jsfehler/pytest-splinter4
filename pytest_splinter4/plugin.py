@@ -8,6 +8,7 @@ import functools  # pragma: no cover
 import logging
 import mimetypes  # pragma: no cover
 import os.path
+import pathlib
 import re
 import warnings
 from http.client import HTTPException
@@ -260,8 +261,8 @@ def splinter_logs_dir():
     return 'logs'
 
 
-@pytest.fixture(scope='session')
-def _splinter_driver_default_kwargs(splinter_logs_dir, splinter_remote_name):
+@pytest.fixture(scope='function')
+def _splinter_driver_default_kwargs(request, splinter_logs_dir, splinter_remote_name):
     """Sane defaults for the various driver arguments."""
     os.makedirs(splinter_logs_dir, exist_ok=True)
 
@@ -283,8 +284,8 @@ def _splinter_driver_default_kwargs(splinter_logs_dir, splinter_remote_name):
         },
         'firefox': {
             'service': FirefoxService(
-                #log_output=f"{splinter_logs_dir}/geckodriver.log",
-                #service_args=['--log', 'debug']
+                log_output=str(pathlib.Path(splinter_logs_dir, request.node.name, "geckodriver.log")),
+                service_args=['--log', 'debug']
             ),
             'options': options['firefox'],
         },
