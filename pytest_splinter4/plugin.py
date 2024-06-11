@@ -18,16 +18,15 @@ from _pytest import junitxml
 import pytest  # pragma: no cover
 
 from selenium.common.exceptions import WebDriverException
-from selenium.webdriver.support import wait
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.edge.service import Service as EdgeService
 from selenium.webdriver.firefox.service import Service as FirefoxService
+from selenium.webdriver.support import wait
 
 import splinter  # pragma: no cover
 
 from urllib3.exceptions import MaxRetryError
 
-from .executable_path import get_executable_path
 from .webdriver_patches import patch_webdriver  # pragma: no cover
 from .xdist_plugin import SplinterXdistPlugin
 
@@ -272,26 +271,30 @@ def _splinter_driver_default_kwargs(request, splinter_logs_dir, splinter_remote_
         'edge': {},
     }
 
-    cwd = os.getcwd()
+    chromedriver_log_path = str(
+        pathlib.Path(splinter_logs_dir, request.node.name, "chromedriver.log"),
+    )
+    geckodriver_log_path = str(
+        pathlib.Path(splinter_logs_dir, request.node.name, "geckodriver.log"),
+    )
 
     driver_kwargs = {
         'chrome': {
             'service': ChromeService(
-                log_output=f"{splinter_logs_dir}/chromedriver.log",
+                log_output=chromedriver_log_path,
                 service_args=['--verbose'],
             ),
             'options': options['chrome'],
         },
         'firefox': {
             'service': FirefoxService(
-                log_output=str(pathlib.Path(splinter_logs_dir, request.node.name, "geckodriver.log")),
-                service_args=['--log', 'debug']
+                log_output=geckodriver_log_path,
+                service_args=['--log', 'debug'],
             ),
             'options': options['firefox'],
         },
         'edge': {
-            'service': EdgeService(
-        ),
+            'service': EdgeService(),
             'options': options['edge'],
         },
         'remote': {},
