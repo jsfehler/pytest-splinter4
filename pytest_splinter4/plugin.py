@@ -309,12 +309,6 @@ def splinter_window_size():
 
 
 @pytest.fixture(scope="session")
-def splinter_session_scoped_browser(request):
-    """Flag to keep single browser per test session."""
-    return request.config.option.splinter_session_scoped_browser == "true"
-
-
-@pytest.fixture(scope="session")
 def splinter_make_screenshot_on_failure(request):
     """Flag to make browser screenshot on test failure."""
     return request.config.option.splinter_make_screenshot_on_failure == "true"
@@ -715,12 +709,6 @@ def browser(request, browser_instance_getter):
     return browser_instance_getter(request, browser)
 
 
-@pytest.fixture(scope="session")
-def session_browser(request, browser_instance_getter):
-    """Session scoped browser fixture."""
-    return browser_instance_getter(request, session_browser)
-
-
 @pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_makereport(item, call):
     """Assign the report to the item for futher usage."""
@@ -799,16 +787,6 @@ def pytest_addoption(parser):  # pragma: no cover
         dest="splinter_webdriver_socket_timeout",
         metavar="SECONDS",
         default=120,
-    )
-    group.addoption(
-        "--splinter-session-scoped-browser",
-        help="splinter: Use a single browser instance per test session. Defaults to true.",
-        action="store",
-        dest="splinter_session_scoped_browser",
-        metavar="false|true",
-        type=str,
-        choices=["false", "true"],
-        default="true",
     )
     group.addoption(
         "--splinter-make-screenshot-on-failure",
