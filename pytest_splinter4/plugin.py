@@ -487,38 +487,6 @@ def _take_screenshot(
             "Could not save screenshot: {}".format(e)))
 
 
-@pytest.yield_fixture(autouse=True)
-def _browser_screenshot_session(
-    request,
-    session_tmpdir,
-    splinter_session_scoped_browser,
-    splinter_make_screenshot_on_failure,
-):
-    """Make browser screenshot on test failure."""
-    yield
-
-    # Screenshot for function scoped browsers is handled in browser_instance_getter
-    if not splinter_session_scoped_browser:
-        return
-
-    fixture_values = getattr(request, "_fixture_values", {})
-
-    for name, value in fixture_values.items():
-        should_take_screenshot = (
-            hasattr(value, "__splinter_browser__")
-            and splinter_make_screenshot_on_failure
-            and getattr(request.node, "splinter_failure", True)
-        )
-
-        if should_take_screenshot:
-            _take_screenshot(
-                request=request,
-                fixture_name=name,
-                session_tmpdir=session_tmpdir,
-                browser_instance=value,
-            )
-
-
 def _setup_firefox_profile(request, options):
     """Put custom Firefox profile into an options object."""
     splinter_firefox_profile_directory = request.getfixturevalue(
@@ -540,7 +508,6 @@ def _setup_firefox_profile(request, options):
 def browser_instance_getter(
     request,
     browser_patches,
-    splinter_session_scoped_browser,
     splinter_browser_load_condition,
     splinter_browser_load_timeout,
     splinter_driver_kwargs,
@@ -612,17 +579,14 @@ def browser_instance_getter(
 
     def prepare_browser(request, parent, retry_count=3):
         splinter_webdriver = request.getfixturevalue("splinter_webdriver")
-        splinter_session_scoped_browser = request.getfixturevalue(
-            "splinter_session_scoped_browser",
-        )
         splinter_close_browser = request.getfixturevalue(
             "splinter_close_browser")
         browser_key = id(parent)
-        browser = browser_pool.get(browser_key)
-        if not splinter_session_scoped_browser:
-            browser = get_browser(splinter_webdriver)
-            if splinter_close_browser:
-                request.addfinalizer(browser.quit)
+        browser = get_browser(splinter_webdriver)
+
+        if splinter_close_browser:
+            request.addfinalizer(browser.quit)
+
         elif not browser:
             browser = browser_pool[browser_key] = get_browser(
                 splinter_webdriver)
